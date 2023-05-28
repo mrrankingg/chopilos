@@ -15,14 +15,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
 <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js' %}"></script><![endif]--> 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comforter&display=swap" rel="stylesheet">
 
+<style>
+    .larg{
+        font-family: 'Comforter', cursive;
+    }
+</style>
+<link href="{% static 'css/stylef.css' %}" rel="stylesheet">
 </head>
 
 <body>
   <div class="page-wrapper"> 
   
     <!-- Preloader -->
-    <div class="loader-wrap">
+    <!-- <div class="loader-wrap">
         <div class="preloader">
             <div class="preloader-close">x</div>
             <div id="handle-preloader" class="handle-preloader">
@@ -57,7 +66,7 @@
                 </div>  
             </div>
         </div>
-    </div>
+    </div> -->
     <!-- Preloader End -->
     
        <div class="mt-5 pt-4">
@@ -79,15 +88,18 @@
                 <div class="inner clearfix">
                     <div class="top-left clearfix">
                         <ul class="top-info clearfix">
-                            <li><i class="icon far fa-map-marker-alt"></i> Restaurant @ 873, Ozumba Mbadiwe ,
-Victoria Island, Lagos</li>
-                            <li><i class="icon far fa-clock"></i> Daily : 6.00 am to 2.00 pm</li>
+                            <li><i class="icon far fa-map-marker-alt"></i>Restaurant @ 873, Ozumba Mbadiwe ,
+                            Victoria Island, Lagos</li>
+                            <!--  -->
+                            <li><i class="icon far fa-clock"></i>Daily : Open 24hrs</li>
+                            <!--  -->
                         </ul>
                     </div>
                     <div class="top-right clearfix">
                         <ul class="top-info clearfix">
-                            <li><a href="tel:+2348141760134"><i class="icon far fa-phone"></i> 0814 176 0134</a></li>
-                            <li><a href="mailto:Slipperylounge11@gmail.com"><i class="icon far fa-envelope"></i> Slipperylounge11@gmail.com</a></li>
+                            <li><a href="tel:+2348141760134"><i class="icon far fa-phone"></i></a></li>
+                            <li><a href="mailto:Slipperylounge11@gmail.com"><i class="icon far fa-envelope"></i></a></li>
+                            <li><a href="https://www.instagram.com/chopilosbyslippery/"><i class="fab fa-instagram"></i></a></li>
                         </ul>
                     </div>
                 </div>
@@ -112,7 +124,7 @@ Victoria Island, Lagos</li>
 				<div class="main-box d-flex justify-content-between align-items-center flex-wrap">
 				
 					<!-- Links Box -->
-					<div class="links-box clearfix">
+					<div class="clearfix">
 						<!-- Hidden Nav Toggler -->
                         <div class="nav-toggler">
                             <button class="hidden-bar-opener">
@@ -138,9 +150,9 @@ Victoria Island, Lagos</li>
                                 <ul class="navigation clearfix">
                                     <li class="current"><a href="/">Home</a>
                                     </li>
-                                    <li class="has-mega-menu"><a href="/menu">Menus</a>
-                                        
+                                    <li class="has-mega-menu"><a href="/menu">Menus</a>  
                                     </li>
+                                    <li><a href="/event">Events</a></li>
                                     <li><a href="/about">About Us</a></li>
                                     <li><a href="/reservation">Reservation</a></li>
                                     <!-- <li class="dropdown"><a href="#">Pages</a>
@@ -158,7 +170,7 @@ Victoria Island, Lagos</li>
                                             <li><a href="#">Dropdown Lorem 5</a></li>
                                         </ul>
                                     </li> -->
-                                    <li><a href="/event">Events</a></li>
+                                    <!-- <li><a href="/event">Events</a></li> -->
                                     <li><a href="/contact">Contact</a></li>
                                 </ul>
                             </nav>
@@ -167,27 +179,14 @@ Victoria Island, Lagos</li>
                         <!--Nav Outer End-->
                     </div>
                     <!---->
-					{% if user.is_authenticated%}
+					
 					<div class="link link-btn">
-						<a href="/reservation/" class="theme-btn btn-style-one clearfix">
 							<span class="btn-wrap">
-								<span class="text-one">Book a table</span>
-								<span class="text-two">Book a table</span>
+								<span class="text-one"></span>
+								<span class="text-two"></span>
 							</span>
-						</a>
 					</div>
-                    {% else %}
-
-                    <div class="link link-btn">
-						<a href="/login" class="theme-btn btn-style-one clearfix">
-							<span class="btn-wrap">
-								<span class="text-one">Sign in</span>
-								<span class="text-two">Login</span>
-							</span>
-						</a>
-					</div>
-
-                    {% endif %}
+                    
 					
                 </div>
             </div>
@@ -203,7 +202,7 @@ Victoria Island, Lagos</li>
         <!-- Hidden Bar Wrapper -->
         <div class="inner-box">
             <div class="cross-icon hidden-bar-closer"><span class="far fa-close"></span></div>
-            <div class="logo-box"><a href="index.html" title="Delici - Restaurants HTML Template"><img src="{% static 'images/resource/sidebar-logo.png' %}" alt="" title="Delici - Restaurants HTML Template"></a></div>
+            <div class="logo-box"><a href="/" title="Delici - Restaurants HTML Template"><img src="{% static 'images/resource/sidebar-logo.png' %}" alt="" title="Delici - Restaurants HTML Template"></a></div>
             
             <!-- .Side-menu -->
             <div class="side-menu">
@@ -211,11 +210,18 @@ Victoria Island, Lagos</li>
                     <li class=""><a href="/">Home</a>
                         
                     </li>
-                    <li><a href="/menu">Menus</a>
+                    
+                        <li class="dropdown"><a href="#">Menus</a>
+                            <ul>
+                                <li><a href="/menu"> Kitchen Menus</a></li>
+                                <li><a href="/bar-menu"> Bar Menus</a></li>
+                            </ul>
+                        </li>
                        
                     </li>
                     <li><a href="/about">About Us</a></li>
                     <li><a href="/event">Events</a></li>
+                    <!-- <li><a href="/event">Events</a></li> -->
                     <li><a href="/reservation">Reservation</a></li>
                     {% comment %} <li class="dropdown"><a href="#">Pages</a>
                         <ul>
@@ -295,10 +301,10 @@ Victoria Island, Lagos</li>
                     <div class="footer-col info-col col-lg-6 col-md-12 col-sm-12">
                         <div class="inner wow fadeInUp" data-wow-delay="0ms" data-wow-duration="1500ms">
                             <div class="content">
-                                <div class="logo"><a href="index.html" title="Delici - Restaurants"><img src="{% static 'images/logo.png' %}" alt="" title="Delici - Restaurants HTML Template"></a></div>
+                                <div class="logo"><a href="/" title="Delici - Restaurants"><img src="{% static 'images/logo.png' %}" alt="" title="Delici - Restaurants HTML Template"></a></div>
                                 <div class="info">
                                     <ul>
-                                        <li><a href="tel:+2348098922022">Booking Request : 0809 892 2022</a></li>
+                                        <li><a href="tel:+2348098922022">Enquiries : 0809 892 2022</a></li>
 
                                         <li>Restaurant@ 873, Ozumba Mbadiwe , Victoria Island, Lagos</li>
                                         <li>Open: 24hrs</li>
@@ -308,12 +314,12 @@ Victoria Island, Lagos</li>
                                 <div class="separator"><span></span><span></span><span></span></div>
                                 <div class="newsletter">
                                     <h3>Get News & Offers</h3>
-                                    <div class="text">Subscribe us & Get <span>25% Off.</span></div>
+                                    <!-- <div class="text">Subscribe us & Get <span>25% Off.</span></div> -->
                                     <div class="newsletter-form">
-                                        <form method="post" action="https://kalanidhithemes.com/live-preview/landing-page/delici/all-demo/Delici-Defoult/index.html">
+                                        <form method="post" action="#">
                                             <div class="form-group">
                                                 <span class="alt-icon far fa-envelope"></span>
-                                                <input type="email" name="email" value="" placeholder="Your email" required>
+                                                <input type="email" name="email" value="" placeholder="email" required>
                                                 <button type="submit" class="theme-btn btn-style-one clearfix">
                                                     <span class="btn-wrap">
                                                         <span class="text-one">subscribe</span>
@@ -333,8 +339,9 @@ Victoria Island, Lagos</li>
                             <ul class="links">
                                 <li><a href="/">Home</a></li>
                                 <li><a href="/menu">Menus</a></li>
+                                <li><a href="/event">Events</a></li>
                                 <li><a href="/about">About us</a></li>
-                                <li><a href="our-chef.html">Our chefs</a></li>
+                                <!-- <li><a href="our-chef.html">Our chefs</a></li> -->
                                 <li><a href="/contact.html">Contact</a></li>
                             </ul>
                         </div>
@@ -343,11 +350,11 @@ Victoria Island, Lagos</li>
                     <div class="footer-col links-col last col-lg-3 col-md-6 col-sm-12">
                         <div class="inner wow fadeInRight" data-wow-delay="0ms" data-wow-duration="1500ms">
                             <ul class="links">
-                                <li><a href="#">facebook</a></li>
-                                <li><a href="#">instagram</a></li>
-                                <li><a href="#">Twitter</a></li>
+                                <!-- <li><a href="#">facebook</a></li> -->
+                                <li><a href="https://www.instagram.com/chopilosbyslippery/" title="instagram icons"><img src="{% static 'images/icons/instagram.png' %}" style="width: 40px;" alt="" title=""> instagram</a></li>
+                                <!-- <li><a href="#">Twitter</a></li>
                                 <li><a href="#">Youtube</a></li>
-                                <li><a href="#">Google map</a></li>
+                                <li><a href="#">Google map</a></li> -->
                             </ul>
                         </div>
                     </div>
@@ -356,7 +363,7 @@ Victoria Island, Lagos</li>
         </div>
         <div class="footer-bottom">
             <div class="auto-container">
-                <div class="copyright">&copy; 2022 Restaurt. All Rights Reserved   |    Crafted by <a href="#" target="blank">Duduenovation</a></div>
+                <div class="copyright">&copy; 2022 Restaurt. All Rights Reserved   |    Crafted by <a href="#" target="blank">DuduInnovation</a></div>
             </div>
         </div>
     </footer>

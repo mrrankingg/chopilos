@@ -68,6 +68,7 @@ class UserProfile(models.Model):
 # Create your models here.
 class Item(models.Model):
     title = models.CharField(max_length=100)
+    preview_price = models.CharField(max_length=100,default="0.00")
     price = models.FloatField()
     user = models.ForeignKey(to=profile, on_delete=models.CASCADE)
     # item_type = models.CharField(max_length=50, choices=(
@@ -77,8 +78,43 @@ class Item(models.Model):
     slug = models.SlugField(max_length=250, unique=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.TextField()
-    image = models.ImageField()
-    featured = models.BooleanField(default=False)
+    image = models.CharField(blank=True,max_length=850,null=True,default="/static/images/banner3.png")
+    # breakfast = models.BooleanField(default=False)
+    protein = models.BooleanField(default=False)
+    special = models.BooleanField(default=False)
+    drinks = models.BooleanField(default=False)
+    break_fast = models.BooleanField(default=False)
+    starters = models.BooleanField(default=False)
+    rice = models.BooleanField(default=False)
+    pasta_and_nodles = models.BooleanField(default=False)
+    sauce_and_stew = models.BooleanField(default=False)
+    salad = models.BooleanField(default=False)
+    sandwich_and_burgers = models.BooleanField(default=False)
+    side = models.BooleanField(default=False)
+    pepper_soup = models.BooleanField(default=False)
+    grills = models.BooleanField(default=False)
+    african_soup = models.BooleanField(default=False)
+    dessert = models.BooleanField(default=False)
+
+    # this are the bar menu listed
+
+    bar_menu_listed = models.CharField(max_length=100,default="This is the bar menu listed below to fill up")
+    cocktails = models.BooleanField(default=False)
+    slippery_signatures = models.BooleanField(default=False)
+    mocktails = models.BooleanField(default=False)
+    milk_shakes = models.BooleanField(default=False)
+
+    smoothies = models.BooleanField(default=False)
+    soft_drinks = models.BooleanField(default=False)
+    tequila = models.BooleanField(default=False)
+    wines = models.BooleanField(default=False)
+
+    champagne = models.BooleanField(default=False)
+    cognac = models.BooleanField(default=False)
+    whiskey = models.BooleanField(default=False)
+    shisha = models.BooleanField(default=False)
+    vape = models.BooleanField(default=False)
+    
     timestamp = models.DateTimeField(blank=True, null=True)
     created_on = models.DateField(auto_now=True)
     item_created_date = models.DateField(auto_now=True)
@@ -221,13 +257,39 @@ class Gallery(models.Model):
     gallery = models.ImageField()
     timestamp = models.DateTimeField(auto_now_add=True)
     def __str__(self):
-        return self.gallery
+        return "Gallery"
 
+class Event(models.Model):
+    image = models.ImageField()
+    # email =  models.EmailField(max_length=400,default="", blank=True,null=True)
+    title =  models.CharField(max_length=400,default="Event")
+    # address = models.CharField(max_length=100,default="873, Ozumba Mbadiwe , Victoria Island, Lagos")
+    new = models.BooleanField(default=False)
+    event_date = models.DateField(blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+    
+    
+    def get_absolute_url(self):
+        return reverse("core:event_details", kwargs={
+            'pk': self.pk
+    })
+
+class PostImage(models.Model):
+    post = models.ForeignKey(Event, default=None, on_delete=models.CASCADE)
+    image = models.FileField(upload_to = 'images/')
+
+    def __str__(self):
+        return self.post.title
+    
 class Reservation(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.EmailField()
+    type = models.CharField(max_length=15,default=False)
     phone = models.CharField(max_length=15)
     date = models.CharField(max_length=100)
     time = models.CharField(max_length=100)
@@ -243,6 +305,13 @@ class Reservation(models.Model):
             'pk': self.pk
         })
 
+class DataCount(models.Model):
+    name = models.CharField(max_length=1000)
+    count = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return self.name
+    
 class Refund(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     reason = models.TextField()

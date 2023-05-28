@@ -245,21 +245,119 @@ class CheckoutView(View):
 
 
 
+# class HomeView(ListView):
+#     model = Item
+#     paginate_by = 10
+#     template_name = "menu.html"
+
 class HomeView(ListView):
-    model = Item
-    paginate_by = 10
-    template_name = "menu.html"
+    def get(self, request, *args, **kwargs):
+        if request.method == "POST":
+            name = request.POST.get("name")
+            email = request.POST.get("email")
+            phone = request.POST.get("phone")
+            date = request.POST.get("date")
+            time = request.POST.get("time")
+            person = request.POST.get("person")
+            massage = request.POST.get("massage")
+            instance = Reservation.objects.create(user=request.user,name=name, email=email,date=date,time=time,person=person, phone=phone,massage=massage)
+            instance.save()
+            template = render_to_string('users/signup_massage.html',{
+                "email": email
+            })
+                
+            send_mail('From chopilosbyslippery',
+            template,
+            settings.EMAIL_HOST_USER,
+            [email],
+            )
+            messages.success(request, f'Reservation Booked Successfully !')
+            return redirect("core:menu")
+
+        featured_post = Item.objects.all()[:6]
+        special = Item.objects.filter(special=True).order_by('-timestamp')[:1]
+        breakfast = Item.objects.filter(break_fast=True).order_by('-timestamp')[:12]
+        rice = Item.objects.filter(rice=True).order_by('-timestamp')[:12]
+        starters = Item.objects.filter(starters=True).order_by('-timestamp')[:4]
+        salad =  Item.objects.filter(salad=True).order_by('-timestamp')[:5]
+        protein = Item.objects.filter(protein=True).order_by('-timestamp')[:8]
+        protein2 = Item.objects.filter(protein=True).order_by('-timestamp')[8:16]
+        african_soup = Item.objects.filter(african_soup=True).order_by('-timestamp')[0:24]
+        latest = Item.objects.order_by('-timestamp')[0:6]
+        context = {
+            'african_soup':african_soup,
+            'starters': starters,
+            'breakfast': breakfast,
+            'rice': rice,
+            'salad':salad,
+            'protein':protein,
+            'protein2':protein2,
+            'special': special
+        }
+        return render(request, 'menu.html', context)
 
 
+class BarView(ListView):
+    def get(self, request, *args, **kwargs):
+        if request.method == "POST":
+            name = request.POST.get("name")
+            email = request.POST.get("email")
+            phone = request.POST.get("phone")
+            date = request.POST.get("date")
+            time = request.POST.get("time")
+            person = request.POST.get("person")
+            massage = request.POST.get("massage")
+            instance = Reservation.objects.create(user=request.user,name=name, email=email,date=date,time=time,person=person, phone=phone,massage=massage)
+            instance.save()
+            template = render_to_string('users/signup_massage.html',{
+                "email": email
+            })
+                
+            send_mail('From chopilosbyslippery',
+            template,
+            settings.EMAIL_HOST_USER,
+            [email],
+            )
+            messages.success(request, f'Reservation Booked Successfully !')
+            return redirect("core:menu")
+
+        featured_post = Item.objects.all()[:6]
+        special = Item.objects.filter(special=True).order_by('-timestamp')[:1]
+        cocktails = Item.objects.filter(cocktails=True).order_by('-timestamp')[:10]
+        slippery_signatures = Item.objects.filter(slippery_signatures=True).order_by('-timestamp')[:12]
+        mocktails = Item.objects.filter(mocktails=True).order_by('-timestamp')[:6]
+        shakes_milk =  Item.objects.filter(milk_shakes=True).order_by('-timestamp')[:6]
+        soft_drinks = Item.objects.filter(soft_drinks=True).order_by('-timestamp')[:8]
+        shisha = Item.objects.filter(shisha=True).order_by('-timestamp')[:1]
+        vape = Item.objects.filter(vape=True).order_by('-timestamp')[:1]
+        tequila = Item.objects.filter(tequila=True).order_by('-timestamp')[0:8]
+        champagne = Item.objects.filter(champagne=True).order_by('-timestamp')[0:10]
+        latest = Item.objects.order_by('-timestamp')[0:6]
+        context = {
+            'vape':vape,
+            'champagne':champagne,
+            'mocktails': mocktails,
+            'cocktails': cocktails,
+            'slippery_signatures': slippery_signatures,
+            'shakes_milk':shakes_milk,
+            'soft_drinks':soft_drinks,
+            'tequila':tequila,
+            'shisha': shisha
+        }
+        return render(request, 'bar_menu.html', context)
 class IndexView(View):
 
     def get(self, request, *args, **kwargs):
         featured_post = Item.objects.all()[:6]
-        featured = Item.objects.filter(featured=True).order_by('-featured')[:8]
+        counter = DataCount.objects.all()[:4]
+        gal = Gallery.objects.all()
+        special = Item.objects.filter(special=True).order_by('-timestamp')[:8]
         latest = Item.objects.order_by('-timestamp')[0:4]
         context = {
-            'object_list': featured,
+            'counter': counter,
+            'special': special,
             'latest': latest,
+            'gal':gal,
             'futureds': featured_post
         }
         return render(request, 'index.html', context)
@@ -312,6 +410,217 @@ def add_to_cart(request, slug):
         messages.info(request, "This item was added to your cart.")
         return redirect("core:order-summary")
 
+
+class PaymentView(View):
+    def get(self, *args, **kwargs):
+        order = Order.objects.get(user=self.request.user, ordered=False)
+        if order.billing_address:
+            context = {
+                'order': order,
+                'DISPLAY_COUPON_FORM': False
+            }
+            userprofile = self.request.user.userprofile
+            if userprofile.one_click_purchasing:
+                # fetch the users card list
+                cards = stripe.Customer.list_sources(
+                    userprofile.stripe_customer_id,
+                    limit=3,
+                    object='card'
+                )
+                card_list = cards['data']
+                if len(card_list) > 0:
+                    # update the context with the default card
+                    context.update({
+                        'card': card_list[0]
+                    })
+            return render(self.request, "payment.html", context)
+        else:
+            messages.warning(
+                self.request, "You have not added a billing address")
+            return redirect("checkout")
+
+    def post(self, *args, **kwargs):
+        order = Order.objects.get(user=self.request.user, ordered=False)
+        form = PaymentForm(self.request.POST)
+        userprofile = UserProfile.objects.get(user=self.request.user)
+        if form.is_valid():
+            token = form.cleaned_data.get('stripeToken')
+            save = form.cleaned_data.get('save')
+            use_default = form.cleaned_data.get('use_default')
+
+            if save:
+                if userprofile.stripe_customer_id != '' and userprofile.stripe_customer_id is not None:
+                    customer = stripe.Customer.retrieve(
+                        userprofile.stripe_customer_id)
+                    customer.sources.create(source=token)
+
+                else:
+                    customer = stripe.Customer.create(
+                        email=self.request.user.email,
+                    )
+                    customer.sources.create(source=token)
+                    userprofile.stripe_customer_id = customer['id']
+                    userprofile.one_click_purchasing = True
+                    userprofile.save()
+
+            amount = int(order.get_total() * 100)
+
+            try:
+
+                if use_default or save:
+                    # charge the customer because we cannot charge the token more than once
+                    charge = stripe.Charge.create(
+                        amount=amount,  # cents
+                        currency="usd",
+                        customer=userprofile.stripe_customer_id
+                    )
+                else:
+                    # charge once off on the token
+                    charge = stripe.Charge.create(
+                        amount=amount,  # cents
+                        currency="usd",
+                        source=token
+                    )
+
+                # create the payment
+                payment = Payment()
+                payment.stripe_charge_id = charge['id']
+                payment.user = self.request.user
+                payment.amount = order.get_total()
+                payment.save()
+
+                # assign the payment to the order
+
+                order_items = order.items.all()
+                order_items.update(ordered=True)
+                for item in order_items:
+                    item.save()
+
+                order.ordered = True
+                order.payment = payment
+                order.ref_code = create_ref_code()
+                order.save()
+
+                messages.success(self.request, "Your order was successful!")
+                return redirect("/")
+
+            except stripe.error.CardError as e:
+                body = e.json_body
+                err = body.get('error', {})
+                messages.warning(self.request, f"{err.get('message')}")
+                return redirect("/")
+
+            except stripe.error.RateLimitError as e:
+                # Too many requests made to the API too quickly
+                messages.warning(self.request, "Rate limit error")
+                return redirect("/")
+
+            except stripe.error.InvalidRequestError as e:
+                # Invalid parameters were supplied to Stripe's API
+                print(e)
+                messages.warning(self.request, "Invalid parameters")
+                return redirect("/")
+
+            except stripe.error.AuthenticationError as e:
+                # Authentication with Stripe's API failed
+                # (maybe you changed API keys recently)
+                messages.warning(self.request, "Not authenticated")
+                return redirect("/")
+
+            except stripe.error.APIConnectionError as e:
+                # Network communication with Stripe failed
+                messages.warning(self.request, "Network error")
+                return redirect("/")
+
+            except stripe.error.StripeError as e:
+                # Display a very generic error to the user, and maybe send
+                # yourself an email
+                messages.warning(
+                    self.request, "Something went wrong. You were not charged. Please try again.")
+                return redirect("/")
+
+            except Exception as e:
+                # send an email to ourselves
+                messages.warning(
+                    self.request, "A serious error occurred. We have been notifed.")
+                return redirect("/")
+
+        messages.warning(self.request, "Invalid data received")
+        return redirect("/payment/stripe/")
+
+
+def PaymentView(request):
+    plan = request.GET.get('sub_plane')
+    fetch_membership = Membership.objects.filter(membership_type=plan).exists()
+    if fetch_membership == False:
+        return redirect('subscrib')
+    membership = Membership.objects.get(membership_type=plan)
+
+
+    price = float(membership.price)*100
+    price = int(price)
+    def init_payment(request):
+        url = 'https://api.paystack.co/transaction/initialize'
+        headers = {
+            'Authorization': 'Bearer '+settings.PAYSTACK_SECRET_KEY,
+            'Content-type' : 'application/json',
+            'Accept': 'application/json',
+            }
+        datum = {
+            "email": request.user.email,
+            "amount": price
+            }
+        x = requests.post(url, data=json.dumps(datum), headers=headers)
+        if x.status_code != 200:
+            return str(x.status_code)
+
+        result = x.json()
+        return result
+    initialized = init_payment(request)
+    print(initialized)
+    amount = price/100
+    instance = PayHistory.objects.create(amount=amount, payment_for=membership, user=request.user, paystack_charge_id=initialized['data']['reference'], paystack_access_code=initialized['data']['access_code'])
+    UserMembership.objects.filter(user=instance.user).update(reference_code=initialized['data']['reference'])
+    link = initialized['data']['authorization_url']
+    return HttpResponseRedirect(link)
+    return render(request, 'Template/subscrib.html')
+
+
+def call_back_url(request):
+    reference = request.GET.get('reference')
+
+    check_pay = PayHistory.objects.filter(paystack_charge_id=reference).exists()
+    if check_pay == False:
+        print('error')
+    else:
+        payment = PayHistory.objects.get(paystack_charge_id=reference)
+
+        def verify_payment(request):
+            url = 'https://api.paystack.co/transaction/verify/'+reference
+            headers = {
+                'Authorization': 'Bearer '+settings.PAYSTACK_SECRET_KEY,
+                'Content-type' : 'application/json',
+                'Accept': 'application/json',
+                }
+            datum = {
+                "reference": payment.paystack_charge_id
+                }
+            x = requests.get(url, data=json.dumps(datum), headers=headers)
+            if x.status_code != 200:
+                return str(x.status_code)
+
+            result = x.json()
+            return result
+    initialized = verify_payment(request)
+    if initialized['data']['status'] == 'success':
+        PayHistory.objects.filter(paystack_charge_id=initialized['data']['reference']).update(paid=True)
+        new_payment = PayHistory.objects.get(paystack_charge_id=initialized['data']['reference'])
+        instance = Membership.objects.get(id=new_payment.payment_for.id)
+        sub = UserMembership.objects.filter(reference_code=initialized['data']['reference']).update(membership=instance)
+        user_membership = UserMembership.objects.get(reference_code=initialized['data']['reference'])
+        Subscription.objects.create(user_membership=user_membership,expires_in=dt.now().date() + timedelta(days=user_membership.membership.duration))
+        return redirect('/subscribed')  
+    return render(request, 'Template/payment.html') 
 
 @login_required
 def remove_from_cart(request, slug):
@@ -464,6 +773,7 @@ def list_category(request, slug):
 
 
 def about(request):
+    
     return render(request,'about.html')
 
 def contact(request):
@@ -488,7 +798,13 @@ def contact(request):
     return render(request,'contact-us.html')
 
 def event(request):
-    return render(request,'reserved.html')
+    New = Event.objects.filter(new=True).order_by('-timestamp')[0:1]
+    Events = Event.objects.order_by('-timestamp')[0:20]
+    context = {
+        'Events': Events,
+        'New': New,
+    }
+    return render(request,'reserved.html',context)
 
 @login_required
 def reservation(request):
@@ -515,6 +831,20 @@ def reservation(request):
 
     res = Reservation.objects.filter(user=request.user).order_by('-timestamp')[:2]
     return render(request,'reservation.html',{'res':res})
+
+
+# class Event_detailsDetailView(DetailView):
+#     model = PostImage
+#     template_name = "event_details.html"
+
+def Event_detailsDetailView(request, pk):
+    post = get_object_or_404(Event, pk=pk)
+    photos = PostImage.objects.filter(post=post)
+    return render(request, 'event_details.html', {
+        'post':post,
+        'photos':photos
+    })
+    
 
 class ReservedDetailView(DetailView):
     model = Reservation

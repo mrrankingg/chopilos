@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-&s6ralr++jq@!q!r2+pb2(#q57%qj0xqx@d+09f2y!buhfvo67
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['164.92.155.135']
 
 
 # Application definition
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'users',
     'django_countries',
     'crispy_forms',
-    'crispy_bootstrap4'
+    'crispy_bootstrap5'
 ]
 
 MIDDLEWARE = [
@@ -59,7 +59,7 @@ ROOT_URLCONF = 'resturantCafe.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -127,13 +127,13 @@ USE_TZ = True
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root')
 
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, 'static'),
+# )
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type

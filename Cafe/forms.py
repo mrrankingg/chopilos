@@ -4,7 +4,7 @@ from django_countries.widgets import CountrySelectWidget
 
 
 PAYMENT_CHOICES = (
-    ('S', 'Stripe'),
+    ('S', 'Paystack'),
     ('P', 'PayPal')
 )
 
@@ -56,6 +56,6 @@ class RefundForm(forms.Form):
 
 
 class PaymentForm(forms.Form):
-    stripeToken = forms.CharField(required=False)
+    paystackToken = forms.CharField(required=False)
     save = forms.BooleanField(required=False)
     use_default = forms.BooleanField(required=False)

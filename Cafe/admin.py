@@ -71,4 +71,19 @@ admin.site.register(contactUs)
 admin.site.register(Reservation)
 admin.site.register(Gallery)
 
+class PostImageAdmin(admin.StackedInline):
+    model = PostImage
+
+@admin.register(Event)
+class PostAdmin(admin.ModelAdmin):
+    inlines = [PostImageAdmin]
+
+    class Meta:
+       model = Event
+
+@admin.register(PostImage)
+class PostImageAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(DataCount)
+
 
